@@ -1,6 +1,7 @@
 package com.springbatchexample.config;
 
-import com.springbatchexample.entity.Student;
+import javax.sql.DataSource;
+
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -21,12 +22,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
-import javax.sql.DataSource;
+import com.springbatchexample.entity.Student;
 
 @EnableBatchProcessing
 @Configuration
 public class SpringBatchConfig {
-
 
     @Autowired
     private DataSource dataSource;
@@ -45,7 +45,6 @@ public class SpringBatchConfig {
                 .build();
     }
 
-
     @Bean
     public StudentItemProcessor processor() {
         return new StudentItemProcessor();
@@ -59,7 +58,6 @@ public class SpringBatchConfig {
         writer.setDataSource(dataSource);
         return writer;
     }
-
 
     @Bean
     public Job writeStudentDataIntoSqlDb() {

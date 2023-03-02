@@ -1,7 +1,8 @@
 package com.springbatchexample.config;
 
-import com.springbatchexample.entity.Student;
 import org.springframework.batch.item.ItemProcessor;
+
+import com.springbatchexample.entity.Student;
 
 public class StudentItemProcessor implements ItemProcessor<Student, Student> {
 
