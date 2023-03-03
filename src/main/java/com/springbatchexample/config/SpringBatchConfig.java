@@ -14,7 +14,6 @@ import org.springframework.batch.core.step.builder.SimpleStepBuilder;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
-import org.springframework.batch.item.json.JacksonJsonObjectReader;
 import org.springframework.batch.item.json.JsonItemReader;
 import org.springframework.batch.item.json.builder.JsonItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +38,7 @@ public class SpringBatchConfig {
 
     public JsonItemReader<Student> jsonItemReader() {
         return new JsonItemReaderBuilder<Student>()
-                .jsonObjectReader(new JacksonJsonObjectReader<>(Student.class))
+                .jsonObjectReader(new CustomJsonReader<>(Student.class, "results"))
                 .resource(new ClassPathResource("data.json"))
                 .name("studentJsonItemReader")
                 .build();

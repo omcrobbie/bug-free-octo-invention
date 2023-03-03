@@ -2,17 +2,23 @@ package com.springbatchexample.config;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.logging.Logger;
 
 import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.json.JsonObjectReader;
 import org.springframework.core.io.Resource;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.jayway.jsonpath.JsonPath;
+import com.springbatchexample.main.WithJson;
 
 /*
  * This class follows the structure and functions similar to JacksonJsonObjectReader, with 
@@ -73,7 +79,8 @@ public class CustomJsonReader<T> implements JsonObjectReader<T> {
         try {
             if (this.jsonParser.nextToken() == JsonToken.START_OBJECT) {
                 // T instance = targetType.getDeclaredConstructor(targetType).newInstance();
-                T result = this.mapper.readValue(this.jsonParser, this.targetType);
+                String jsonText = this.mapper.readTree(this.jsonParser).toString();
+                T result = getNewInstance(jsonText);
                 logger.info("Object read: " + result.hashCode());
                 return result;
             }
@@ -99,6 +106,21 @@ public class CustomJsonReader<T> implements JsonObjectReader<T> {
     public void close() throws Exception {
         this.inputStream.close();
         this.jsonParser.close();
+    }
+
+    private T getNewInstance(String jsonData) throws InstantiationException, IllegalAccessException,
+            NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
+        T instance = this.targetType.newInstance();
+        Field[] fields = this.targetType.getDeclaredFields();
+        for (Field field : fields) {
+            String val = field.getAnnotation(WithJson.class).value();
+            Object data = JsonPath.read(jsonData, val);
+            Method method = targetType.getMethod("set" + StringUtils.capitalize(field.getName()), targetType);
+            method.invoke(instance, data);
+
+        }
+        return instance;
+
     }
 
 }

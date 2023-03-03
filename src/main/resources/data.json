@@ -2,27 +2,37 @@
   "results": [
     {
       "id": 1,
-      "name": "John",
+      "name": {
+        "first": "John"
+      },
       "rollNumber": "0126CS090"
     },
     {
       "id": 2,
-      "name": "Arya",
+      "name": {
+        "first": "Arya"
+      },
       "rollNumber": "0126CS090"
     },
     {
       "id": 3,
-      "name": "Will",
+      "name": {
+        "first": "Will"
+      },
       "rollNumber": "0126CS090"
     },
     {
       "id": 4,
-      "name": "Smith",
+      "name": {
+        "first": "Smith"
+      },
       "rollNumber": "0126CS090"
     },
     {
       "id": 5,
-      "name": "Rock",
+      "name": {
+        "first": "Rock"
+      },
       "rollNumber": "0126CS090"
     }
   ]
