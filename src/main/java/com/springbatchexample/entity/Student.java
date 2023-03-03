@@ -8,7 +8,7 @@ import lombok.Data;
 public class Student {
 
     @WithJson("$.id")
-    private Long id;
+    private Integer id;
 
     @WithJson("$.name.first")
     private String name;

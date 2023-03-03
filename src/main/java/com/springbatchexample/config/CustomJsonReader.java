@@ -114,9 +114,10 @@ public class CustomJsonReader<T> implements JsonObjectReader<T> {
         Field[] fields = this.targetType.getDeclaredFields();
         for (Field field : fields) {
             String val = field.getAnnotation(WithJson.class).value();
+            Class<?> fieldType = field.getType();
             Object data = JsonPath.read(jsonData, val);
-            Method method = targetType.getMethod("set" + StringUtils.capitalize(field.getName()), targetType);
-            method.invoke(instance, data);
+            Method method = targetType.getMethod("set" + StringUtils.capitalize(field.getName()), fieldType);
+            method.invoke(instance, fieldType.cast(data));
 
         }
         return instance;
