@@ -18,7 +18,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.jayway.jsonpath.JsonPath;
-import com.springbatchexample.main.WithJson;
 
 /*
  * This class follows the structure and functions similar to JacksonJsonObjectReader, with 
@@ -113,11 +112,13 @@ public class CustomJsonReader<T> implements JsonObjectReader<T> {
         T instance = this.targetType.newInstance();
         Field[] fields = this.targetType.getDeclaredFields();
         for (Field field : fields) {
-            String val = field.getAnnotation(WithJson.class).value();
-            Class<?> fieldType = field.getType();
-            Object data = JsonPath.read(jsonData, val);
-            Method method = targetType.getMethod("set" + StringUtils.capitalize(field.getName()), fieldType);
-            method.invoke(instance, fieldType.cast(data));
+            WithJson val = field.getAnnotation(WithJson.class);
+            if (val != null) {
+                Class<?> fieldType = field.getType();
+                Object data = JsonPath.read(jsonData, val.value());
+                Method method = targetType.getMethod("set" + StringUtils.capitalize(field.getName()), fieldType);
+                method.invoke(instance, fieldType.cast(data));
+            }
 
         }
         return instance;

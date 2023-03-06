@@ -1,40 +1,36 @@
-package com.springbatchexample.config;
-
-import javax.sql.DataSource;
+package com.springbatchexample.features.students;
 
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.job.builder.FlowJobBuilder;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.listener.JobExecutionListenerSupport;
 import org.springframework.batch.core.step.builder.SimpleStepBuilder;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
-import org.springframework.batch.item.database.JdbcBatchItemWriter;
+import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.json.JsonItemReader;
 import org.springframework.batch.item.json.builder.JsonItemReaderBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
-import com.springbatchexample.entity.Student;
+import com.springbatchexample.config.CustomJsonReader;
 
-@EnableBatchProcessing
+import lombok.RequiredArgsConstructor;
+
 @Configuration
-public class SpringBatchConfig {
+@RequiredArgsConstructor
+public class StudentConfig extends JobExecutionListenerSupport {
 
-    @Autowired
-    private DataSource dataSource;
+    private final JobBuilderFactory jobBuilderFactory;
 
-    @Autowired
-    private JobBuilderFactory jobBuilderFactory;
+    private final StepBuilderFactory stepBuilderFactory;
 
-    @Autowired
-    private StepBuilderFactory stepBuilderFactory;
+    private final StudentRepository studentRepository;
 
     public JsonItemReader<Student> jsonItemReader() {
         return new JsonItemReaderBuilder<Student>()
@@ -50,12 +46,14 @@ public class SpringBatchConfig {
     }
 
     @Bean
-    public JdbcBatchItemWriter<Student> writer() {
-        JdbcBatchItemWriter<Student> writer = new JdbcBatchItemWriter<>();
-        writer.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>());
-        writer.setSql("insert into student(id,roll_number,name) values (:id,:rollNumber,:name)");
-        writer.setDataSource(dataSource);
-        return writer;
+    public ItemWriter<Student> writer() {
+        // JdbcBatchItemWriter<Student> writer = new JdbcBatchItemWriter<>();
+        // writer.setItemSqlParameterSourceProvider(new
+        // BeanPropertyItemSqlParameterSourceProvider<>());
+        // writer.setSql("insert into student(id,roll_number,name) values
+        // (:id,:rollNumber,:name)");
+        // writer.setDataSource(dataSource);
+        return studentRepository::saveAll;
     }
 
     @Bean
@@ -72,6 +70,11 @@ public class SpringBatchConfig {
         StepBuilder stepBuilder = stepBuilderFactory.get("getFirstStep");
         SimpleStepBuilder<Student, Student> simpleStepBuilder = stepBuilder.chunk(1);
         return simpleStepBuilder.reader(jsonItemReader()).processor(processor()).writer(writer()).build();
+    }
+
+    @Override
+    public void afterJob(JobExecution jobExecution) {
+        super.afterJob(jobExecution);
     }
 
 }

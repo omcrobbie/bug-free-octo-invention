@@ -1,4 +1,4 @@
-package com.springbatchexample.main;
+package com.springbatchexample.config;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

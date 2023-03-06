@@ -1,0 +1,39 @@
+{
+  "resultz": [
+    {
+      "id": 1,
+      "name": {
+        "first": "John"
+      },
+      "rollNumber": "0126CS090"
+    },
+    {
+      "id": 2,
+      "name": {
+        "first": "Arya"
+      },
+      "rollNumber": "0126CS090"
+    },
+    {
+      "id": 3,
+      "name": {
+        "first": "Will"
+      },
+      "rollNumber": "0126CS090"
+    },
+    {
+      "id": 4,
+      "name": {
+        "first": "Smith"
+      },
+      "rollNumber": "0126CS090"
+    },
+    {
+      "id": 5,
+      "name": {
+        "first": "Rock"
+      },
+      "rollNumber": "0126CS090"
+    }
+  ]
+}
