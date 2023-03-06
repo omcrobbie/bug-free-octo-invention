@@ -41,6 +41,11 @@ public class CustomJsonReader<T> implements JsonObjectReader<T> {
         this.targetPath = targetPath;
     }
 
+    public CustomJsonReader(Class<T> targetType) {
+        super();
+        this.targetType = targetType;
+    }
+
     public JsonParser getJsonParser() {
         return jsonParser;
     }
@@ -62,7 +67,10 @@ public class CustomJsonReader<T> implements JsonObjectReader<T> {
     public void open(Resource resource) throws Exception {
         logger.info("Opening json object reader");
         this.inputStream = resource.getInputStream();
-        JsonNode jsonNode = this.mapper.readTree(this.inputStream).findPath(targetPath);
+        JsonNode jsonNode = this.mapper.readTree(this.inputStream);
+        if (this.targetPath != null) {
+            jsonNode = jsonNode.findPath(targetPath);
+        }
         if (!jsonNode.isMissingNode()) {
             this.jsonParser = startArrayParser(jsonNode);
             logger.info("Reader open with parser reference: " + this.jsonParser);

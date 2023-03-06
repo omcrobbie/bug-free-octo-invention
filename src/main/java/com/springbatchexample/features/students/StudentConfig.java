@@ -16,7 +16,6 @@ import org.springframework.batch.item.json.JsonItemReader;
 import org.springframework.batch.item.json.builder.JsonItemReaderBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 
 import com.springbatchexample.config.CustomJsonReader;
 
@@ -32,10 +31,13 @@ public class StudentConfig extends JobExecutionListenerSupport {
 
     private final StudentRepository studentRepository;
 
+    private final StudentsClient studentsClient;
+
+    @Bean
     public JsonItemReader<Student> jsonItemReader() {
         return new JsonItemReaderBuilder<Student>()
-                .jsonObjectReader(new CustomJsonReader<>(Student.class, "results"))
-                .resource(new ClassPathResource("data.json"))
+                .jsonObjectReader(new CustomJsonReader<>(Student.class))
+                .resource(studentsClient.getUsers())
                 .name("studentJsonItemReader")
                 .build();
     }
@@ -47,12 +49,6 @@ public class StudentConfig extends JobExecutionListenerSupport {
 
     @Bean
     public ItemWriter<Student> writer() {
-        // JdbcBatchItemWriter<Student> writer = new JdbcBatchItemWriter<>();
-        // writer.setItemSqlParameterSourceProvider(new
-        // BeanPropertyItemSqlParameterSourceProvider<>());
-        // writer.setSql("insert into student(id,roll_number,name) values
-        // (:id,:rollNumber,:name)");
-        // writer.setDataSource(dataSource);
         return studentRepository::saveAll;
     }
 
