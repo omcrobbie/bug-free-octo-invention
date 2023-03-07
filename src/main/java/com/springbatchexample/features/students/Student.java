@@ -1,34 +1,25 @@
 package com.springbatchexample.features.students;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import javax.persistence.Table;
 
 import com.springbatchexample.config.WithJson;
+import com.springbatchexample.features.common.BaseEntity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@EntityListeners(AuditingEntityListener.class)
-public class Student implements Serializable {
-
-    @Id
-    @GeneratedValue
-    private Long id;
-
-    @CreatedDate
-    private Date createdAt;
+@Table(name = "STUDENTS")
+@EqualsAndHashCode(callSuper = false)
+public class Student extends BaseEntity {
 
     @WithJson("$.email")
     private String email;
+
+    @WithJson("$.id")
+    private Integer userId;
 
     @WithJson("$.name")
     private String name;
@@ -38,5 +29,7 @@ public class Student implements Serializable {
 
     @WithJson("$.company.name")
     private String companyName;
+
+    private Integer postsCount;
 
 }

@@ -1,4 +1,4 @@
-package com.springbatchexample.features.students;
+package com.springbatchexample.features.comments;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -23,49 +23,44 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
-public class StudentConfig implements JobConfig<StudentItemProcessor, Student> {
+public class CommentsConfig implements JobConfig<CommentsItemProcessor, Comment> {
 
     private final JobBuilderFactory jobBuilderFactory;
 
     private final StepBuilderFactory stepBuilderFactory;
 
-    private final StudentRepository studentRepository;
+    private final CommentRepository commentRepository;
 
     private final APIClient apiClient;
 
-    @Override
-    public JsonItemReader<Student> jsonItemReader() {
-        return new JsonItemReaderBuilder<Student>()
-                .jsonObjectReader(new CustomJsonReader<>(Student.class))
-                .resource(apiClient.getUsers())
-                .name("studentJsonItemReader")
+    public JsonItemReader<Comment> jsonItemReader() {
+        return new JsonItemReaderBuilder<Comment>()
+                .jsonObjectReader(new CustomJsonReader<>(Comment.class))
+                .resource(apiClient.getComments())
+                .name("commentsJsonReader")
                 .build();
     }
 
-    @Override
-    public StudentItemProcessor processor() {
-        return new StudentItemProcessor();
+    public CommentsItemProcessor processor() {
+        return new CommentsItemProcessor();
     }
 
-    @Override
-    public ItemWriter<Student> writer() {
-        return studentRepository::saveAll;
+    public ItemWriter<Comment> writer() {
+        return commentRepository::saveAll;
     }
 
-    @Override
-    @Bean(name = "STUDENT_JOB")
+    @Bean(name = "COMMENTS_JOB")
     public Job writeEntityToDb() {
-        JobBuilder jobBuilder = jobBuilderFactory.get("STUDENT_JOB");
+        JobBuilder jobBuilder = jobBuilderFactory.get("COMMENTS_JOB");
         jobBuilder.incrementer(new RunIdIncrementer());
         FlowJobBuilder flowJobBuilder = jobBuilder.flow(getStep()).end();
         Job job = flowJobBuilder.build();
         return job;
     }
 
-    @Override
     public Step getStep() {
-        StepBuilder stepBuilder = stepBuilderFactory.get("getFirstStep");
-        SimpleStepBuilder<Student, Student> simpleStepBuilder = stepBuilder.chunk(1);
+        StepBuilder stepBuilder = stepBuilderFactory.get("getNextStep");
+        SimpleStepBuilder<Comment, Comment> simpleStepBuilder = stepBuilder.chunk(1);
         return simpleStepBuilder.reader(jsonItemReader()).processor(processor()).writer(writer()).build();
     }
 
